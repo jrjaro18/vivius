@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 )
 
@@ -10,7 +9,6 @@ import (
 
 func (s *Server) AddHandler() ApiFunc {
 	return func(w http.ResponseWriter, r *http.Request) ApiError {
-		// read from the body
 		var body Request
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			return ApiError{
@@ -18,16 +16,16 @@ func (s *Server) AddHandler() ApiFunc {
 				statusCode: http.StatusInternalServerError,
 			}
 		}
-		// logs the incoming request
-		log.Printf("%+v\n", body)
-		// throws error if anything is missing
+
+		// log.Printf("%+v\n", body)
+
 		if body.Key == "" || body.Value == "" {
 			return ApiError{
 				message:    "key or value not found in the body",
 				statusCode: http.StatusBadRequest,
 			}
 		}
-		// adds into the store
+
 		s.Add(body.Key, body.Value)
 		WriteJson(w, http.StatusAccepted, map[string]any{body.Key: body.Value})
 		return ApiError{}
