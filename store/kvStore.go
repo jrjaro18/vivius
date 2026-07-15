@@ -1,4 +1,4 @@
-package kvStore
+package store
 
 import (
 	"sync"
@@ -9,7 +9,7 @@ type KvStore struct {
 	data map[string]string
 }
 
-func NewStore() *KvStore {
+func NewKvStore() *KvStore {
 	return &KvStore{
 		data: make(map[string]string),
 	}
@@ -26,4 +26,10 @@ func (s *KvStore) Get(key string) (string, bool) {
 	defer s.mutex.Unlock()
 	value, exists := s.data[key]
 	return value, exists
+}
+
+func (s *KvStore) Delete(key string) {
+	s.mutex.Lock()
+	defer s.mutex.Unlock()
+	delete(s.data, key)
 }
