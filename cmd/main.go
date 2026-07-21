@@ -8,7 +8,7 @@ import (
 
 func main() {
 	store := store.NewKvStore()
-	node1 := node.NewNode(1, store)
+	node1 := node.NewNode(1, store, nil, nil)
 
 	val, exists := node1.Get("A")
 	if exists {

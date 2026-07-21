@@ -9,7 +9,7 @@ type PersistentStore interface {
 	TruncateFrom(index int) error
 	Len() int
 	SaveTermAndVote(term int, votedFor int) error
-	LoadTermAndVote() (term int, votedFor int) // TODO: Removed error from parameter
+	LoadTermAndVote() (term int, votedFor int, err error)
 }
 
 type LogEntry struct {
