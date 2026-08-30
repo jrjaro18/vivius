@@ -1,28 +1,31 @@
 package main
 
-import (
-	"vivius/store"
-	"vivius/node"
-	"log"
-)
+import "vivius/cluster"
+
+// "vivius/store"
+// "vivius/node"
+// "log"
 
 func main() {
-	store := store.NewKvStore()
-	node1 := node.NewNode(1, store, nil, nil)
+	// store := store.NewKvStore()
+	// node1 := node.NewNode(1, store, nil, nil)
 
-	val, exists := node1.Get("A")
-	if exists {
-		log.Println("Value for key A:", val)
-	} else {
-		log.Println("Key not found")
-	}
+	// val, exists := node1.Get("A")
+	// if exists {
+	// 	log.Println("Value for key A:", val)
+	// } else {
+	// 	log.Println("Key not found")
+	// }
 
-	node1.Set("A", "Value for A")
-	val, exists = node1.Get("A")
+	// node1.Set("A", "Value for A")
+	// val, exists = node1.Get("A")
 	
-	if exists {
-		log.Println("Value for key A:", val)
-	} else {
-		log.Println("Key not found")
-	}
+	// if exists {
+	// 	log.Println("Value for key A:", val)
+	// } else {
+	// 	log.Println("Key not found")
+	// }
+	cluster := cluster.NewCluster([]int{1, 2, 3})
+	cluster.StartAll()
+	select {}
 }

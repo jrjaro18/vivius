@@ -62,3 +62,15 @@ func (n *Node) Start() {
         }
     }
 }
+
+func (n *Node) GetRole() Role {
+	n.mutex.Lock()
+	defer n.mutex.Unlock()
+	return n.role
+}
+
+func (n *Node) GetId() int {
+	n.mutex.Lock()
+	defer n.mutex.Unlock()
+	return n.id
+}

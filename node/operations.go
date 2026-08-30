@@ -7,16 +7,11 @@ import (
 	"vivius/errors"
 )
 
-func (n *Node) Set(key, value string) {
-	n.dataStore.Set(key, value)
-}
-
 func (n *Node) Get(key string) (string, bool) {
-	return n.dataStore.Get(key)
-}
-
-func (n *Node) Delete(key string) {
-	n.dataStore.Delete(key)
+    n.mutex.Lock()
+    defer n.mutex.Unlock()
+    val, ok := n.dataStore.Get(key)
+	return val, ok
 }
 
 func (n *Node) askForVote() {
@@ -120,7 +115,7 @@ func (n *Node) GiveVote(args RequestVoteArgs) RequestVoteReply {
     return RequestVoteReply{voteGranted: true, term: n.currentTerm}
 }
 
-func (n *Node) receiveWriteRequestFromClient(c Command) error {
+func (n *Node) ReceiveWriteRequestFromClient(c Command) error {
     n.mutex.Lock()
     if n.role != Leader {
         hint := n.leaderId

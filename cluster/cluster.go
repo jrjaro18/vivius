@@ -1,19 +1,20 @@
 package cluster
 
 import (
-    "vivius/memstore"
+	"log"
+	"vivius/memStore"
+	"vivius/node"
+	"vivius/simTransport"
 	"vivius/store"
-    "vivius/node"
-    "vivius/simtransport"
 )
 
 type Cluster struct {
     Nodes     map[int]*node.Node
-    Transport *simtransport.SimTransport
+    Transport *simTransport.SimTransport
 }
 
 func NewCluster(nodeIDs []int) *Cluster {
-    transport := simtransport.NewSimTransport()
+    transport := simTransport.NewSimTransport()
 
     c := &Cluster{
         Nodes:     make(map[int]*node.Node),
@@ -24,7 +25,7 @@ func NewCluster(nodeIDs []int) *Cluster {
         n := node.NewNode(
             id,
             store.NewKvStore(),
-            memstore.NewMemPersistentStore(),
+            memStore.NewMemPersistentStore(),
             transport, // shared directly - no per-node wrapper needed anymore
         )
         transport.RegisterNode(id, n)
@@ -36,6 +37,7 @@ func NewCluster(nodeIDs []int) *Cluster {
 
 func (c *Cluster) StartAll() {
     for _, n := range c.Nodes {
+		log.Println("Starting node")
         go n.Start()
     }
 }

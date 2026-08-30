@@ -1,4 +1,4 @@
-package simtransport
+package simTransport
 
 import (
     "errors"
