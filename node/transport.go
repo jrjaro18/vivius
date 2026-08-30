@@ -3,7 +3,7 @@ package node
 type Transport interface {
 	SendRequestVote(target int, args RequestVoteArgs) (RequestVoteReply, error)
     SendAppendEntries(target int, args AppendEntriesArgs) (AppendEntriesReply, error)
-	GetPeers() []int
+	GetAllNodeIds() []int
 }
 
 type RequestVoteArgs struct {

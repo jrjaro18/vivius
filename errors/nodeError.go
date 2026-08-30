@@ -20,5 +20,5 @@ type ErrNoMajority struct {
 }
 
 func (err *ErrNoMajority) Error() string {
-	return fmt.Sprintf("Given node, %v, couldn't receive majority of the votes required to perform a successful write operation, received %v votes from %v peers", err.Node, err.VotesReceived, err.TotalPeers)
+	return fmt.Sprintf("Given node, %v, couldn't receive majority of the votes required to perform a successful write operation, received %v votes from %v nodes", err.Node, err.VotesReceived, err.TotalPeers)
 }

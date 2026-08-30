@@ -46,7 +46,7 @@ func (n *Node) handleCandidate() {
 }
 
 func (n *Node) handleLeader() {
-    for _, peerID := range n.transport.GetPeers() {
+    for _, peerID := range n.peers() {
         go func(id int) {
             n.propagateWriteRequest(id) // entry param now unused, per earlier note - sends whatever's in nextIndex..latest, or nothing (pure heartbeat) if caught up
         }(peerID)

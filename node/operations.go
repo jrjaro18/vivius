@@ -35,7 +35,7 @@ func (n *Node) askForVote() {
     totalVotes.Store(1) // FIX: count self-vote
 
     wg := sync.WaitGroup{}
-    for _, peerID := range n.transport.GetPeers() {
+    for _, peerID := range n.peers() {
         wg.Add(1)
         go func(id int) {
             defer wg.Done()
@@ -70,7 +70,7 @@ func (n *Node) askForVote() {
         return // stale election attempt - already changed underneath us
     }
 
-    totalNodes := len(n.transport.GetPeers()) + 1
+    totalNodes := len(n.transport.GetAllNodeIds())
     if int(totalVotes.Load()) > totalNodes/2 {
         log.Printf("Node %d received majority votes, becoming leader", n.id)
         n.role = Leader
@@ -82,14 +82,14 @@ func (n *Node) askForVote() {
         lastIndex := n.persistentStore.LastIndex()
         n.nextIndex = make(map[int]int)
         n.matchIndex = make(map[int]int)
-        for _, peerID := range n.transport.GetPeers() {
+        for _, peerID := range n.peers() {
             n.nextIndex[peerID] = lastIndex + 1
             n.matchIndex[peerID] = 0
         }
     }
 }
 
-func (n *Node) giveVote(args RequestVoteArgs) RequestVoteReply {
+func (n *Node) GiveVote(args RequestVoteArgs) RequestVoteReply {
     n.mutex.Lock()
     defer n.mutex.Unlock()
 
@@ -143,7 +143,7 @@ func (n *Node) receiveWriteRequestFromClient(c Command) error {
     successCount.Store(1) // FIX: leader counts its own append
 
     wg := sync.WaitGroup{}
-    for _, peerId := range n.transport.GetPeers() {
+    for _, peerId := range n.peers() {
         wg.Add(1)
         go func(nodeId int) {
             defer wg.Done()
@@ -170,9 +170,9 @@ func (n *Node) receiveWriteRequestFromClient(c Command) error {
         return &errors.ErrNotLeader{Node: n.id, Hint: n.leaderId}
     }
 
-    totalNodes := len(n.transport.GetPeers()) + 1
+    totalNodes := len(n.transport.GetAllNodeIds())
     if int(successCount.Load()) <= totalNodes/2 { // FIX: threshold now counts leader correctly
-        return &errors.ErrNoMajority{Node: n.id, VotesReceived: successCount.Load(), TotalPeers: len(n.transport.GetPeers())}
+        return &errors.ErrNoMajority{Node: n.id, VotesReceived: successCount.Load(), TotalPeers: len(n.transport.GetAllNodeIds())}
     }
 
     if logEntry.Index > n.commitIndex {
@@ -250,7 +250,7 @@ func (n *Node) propagateWriteRequest(peerID int) (bool, error) {
     }
 }
 
-func (n *Node) receiveWriteRequestFromLeader(args AppendEntriesArgs) AppendEntriesReply {
+func (n *Node) ReceiveWriteRequestFromLeader(args AppendEntriesArgs) AppendEntriesReply {
     n.mutex.Lock()
     defer n.mutex.Unlock()
 
@@ -330,4 +330,15 @@ func (n *Node) applyEntries() {
             n.dataStore.Delete(entry.Command.Key)
         }
     }
+}
+
+func (n *Node) peers() []int {
+    all := n.transport.GetAllNodeIds()
+    result := make([]int, 0, len(all))
+    for _, id := range all {
+        if id != n.id {
+            result = append(result, id)
+        }
+    }
+    return result
 }
