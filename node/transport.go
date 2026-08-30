@@ -19,7 +19,15 @@ type RequestVoteReply struct {
 }
 
 type AppendEntriesArgs struct {
+    term         int
+    leaderID     int
+    prevLogIndex int
+    prevLogTerm  int
+    entries      []LogEntry
+    leaderCommit int
 }
 
 type AppendEntriesReply struct {
+    term    int
+    success bool
 }
