@@ -13,6 +13,10 @@ type RequestVoteArgs struct {
 	lastLogIndex int
 }
 
+func (args RequestVoteArgs) CandidateID() int {
+	return args.candidateID
+}
+
 type RequestVoteReply struct {
 	voteGranted bool
 	term 	  	int
@@ -25,6 +29,10 @@ type AppendEntriesArgs struct {
     prevLogTerm  int
     entries      []LogEntry
     leaderCommit int
+}
+
+func (args AppendEntriesArgs) LeaderID() int {
+	return args.leaderID
 }
 
 type AppendEntriesReply struct {

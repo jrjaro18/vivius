@@ -36,14 +36,14 @@ func (t *SimTransport) GetAllNodeIds() []int {
     return result
 }
 
-func (t *SimTransport) isReachable(target int) bool {
+func (t *SimTransport) isReachable(a, b int) bool {
     t.mu.Lock()
     defer t.mu.Unlock()
-    return !t.partitioned[target]
+    return !t.partitioned[a] && !t.partitioned[b]
 }
 
 func (t *SimTransport) SendRequestVote(target int, args node.RequestVoteArgs) (node.RequestVoteReply, error) {
-    if !t.isReachable(target) {
+    if !t.isReachable(target, args.CandidateID()) {
         return node.RequestVoteReply{}, errors.New("target unreachable")
     }
     t.mu.Lock()
@@ -56,7 +56,7 @@ func (t *SimTransport) SendRequestVote(target int, args node.RequestVoteArgs) (n
 }
 
 func (t *SimTransport) SendAppendEntries(target int, args node.AppendEntriesArgs) (node.AppendEntriesReply, error) {
-    if !t.isReachable(target) {
+    if !t.isReachable(target, args.LeaderID()) {
         return node.AppendEntriesReply{}, errors.New("target unreachable")
     }
     t.mu.Lock()

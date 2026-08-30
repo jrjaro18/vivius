@@ -7,7 +7,7 @@ import (
 )
 
 func (n *Node) handleFollower() {
-	log.Printf("Node %d: handling follower state", n.id)
+	// log.Printf("Node %d: handling follower state", n.id)
 
     timeout := 150*time.Millisecond + time.Duration(rand.Intn(150))*time.Millisecond
     timer := time.NewTimer(timeout)
@@ -22,7 +22,7 @@ func (n *Node) handleFollower() {
     case <-n.receivedInput:
         // valid heartbeat/entry arrived - stay follower, loop will call
         // handleFollower again fresh next iteration of Start()
-        log.Printf("Node %d: received heartbeat/entry, resetting election timer", n.id)
+        // log.Printf("Node %d: received heartbeat/entry, resetting election timer", n.id)
     }
 }
 
@@ -35,7 +35,7 @@ func (n *Node) handleCandidate() {
     term := n.currentTerm
     n.mutex.Unlock()
 
-    log.Printf("Node %d: starting election for term %d", n.id, term)
+    // log.Printf("Node %d: starting election for term %d", n.id, term)
 
     n.askForVote() // blocks until vote-counting completes (askForVote already does wg.Wait())
 
@@ -57,7 +57,7 @@ func (n *Node) handleCandidate() {
 }
 
 func (n *Node) handleLeader() {
-	log.Printf("Node %d: handling leader state", n.id)
+	// log.Printf("Node %d: handling leader state", n.id)
 
     n.mutex.Lock()
     term := n.currentTerm
